@@ -79,6 +79,17 @@ def approve(_spender : address, _value : uint256) -> bool:
     return True
 
 
+@internal
+def _transfer(_from: address, _to: address, _value: uint256):
+    """
+    @dev Internal shared logic for transfer and transferFrom
+    """
+    assert self.balances[_from] >= _value, "Insufficient Balance"
+    self.balances[_from] -= _value
+    self.balances[_to] += _value
+    log Transfer(_from, _to, _value)
+
+
 @external
 def transfer(_to : address, _value : uint256) -> bool:
     """
@@ -89,9 +100,7 @@ def transfer(_to : address, _value : uint256) -> bool:
     @param _value The amount to be transferred
     @return Success boolean
     """
-    self.balances[msg.sender] -= _value
-    self.balances[_to] += _value
-    log Transfer(msg.sender, _to, _value)
+    self._transfer(msg.sender, _to, _value)
     return True
 
 
@@ -106,8 +115,7 @@ def transferFrom(_from : address, _to : address, _value : uint256) -> bool:
     @param _value The amount of tokens to be transferred
     @return Success boolean
     """
-    self.balances[_from] -= _value
-    self.balances[_to] += _value
+    assert self.allowances[_from][msg.sender] >= _value, "Insufficient Allowance"
     self.allowances[_from][msg.sender] -= _value
-    log Transfer(_from, _to, _value)
+    self._transfer(_from, _to, _value)
     return True
