@@ -1,3 +1,5 @@
+# @version ^0.2.0
+
 """
 @title Bare-bones Token implementation
 @notice Based on the ERC-20 token standard as defined at
